@@ -33,16 +33,16 @@
     const name = document.getElementById('name')
     const text = document.getElementById('text')
     const messages = document.getElementById('messages')
-      const feedback = document.getElementById('feedback')
-      const users = document.getElementById('users')
+    const feedback = document.getElementById('feedback')
+    const users = document.getElementById('users')
 
-      btn.addEventListener('click', () => {
-        $.post('http://localhost:3000/v1/chat', { name: name.value, text: text.value })
-        text.value = ''
-        if (name.value.length) {
-          socket.emit('join', name.value);
-        }
-      })
+    btn.addEventListener('click', () => {
+      $.post('http://localhost:3000/v1/chat', { name: name.value, text: text.value })
+      text.value = ''
+      if (name.value.length) {
+        socket.emit('join', name.value);
+      }
+    })
 
     // Listen for events
     socket.on('chat', (data) => {
