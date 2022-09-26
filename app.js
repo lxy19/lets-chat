@@ -1,11 +1,11 @@
-import express from 'express'
-import bodyParser from 'body-parser'
-import http from 'http'
-import { Server } from 'socket.io'
-import router from './route.js'
-import path from 'path'
+const express = require('express')
+const bodyParser = require('body-parser')
+const http = require('http') 
+const { Server } = require('socket.io')
+const router = require('./routes/messageRoute.js')
+const path = require('path')
 
-var app = express();
+var app = express()
 const server = http.createServer(app)
 const PORT = 3000 || process.env.PORT
 const io = new Server(server)

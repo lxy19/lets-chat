@@ -1,8 +1,7 @@
-import express from 'express'
-import mongoose, { Schema } from 'mongoose'
-import config from 'config'
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 
-const MessageSchema = mongoose.Schema({
+const MessageSchema = Schema({
     _id: Schema.Types.ObjectId,
     name: String,
     text: String,
@@ -10,28 +9,24 @@ const MessageSchema = mongoose.Schema({
     modified_at: { type: Date, default: Date.now }
 })
 
-const Message = mongoose.model('Message', MessageSchema)
+const messageModel = mongoose.model('Message', MessageSchema)
 
-const router = express.Router()
-const DB_URL = config.get('mongodb.url')
-
-mongoose.connect(DB_URL)
-router.get('/', (req, res) => {
-    Message.find((err, messages) => {
+exports.findAll = (req, res) => {
+    messageModel.find((err, messages) => {
         if (err) res.status(500).send(err)
         res.json(messages)
     })
-})
+}
 
-router.get('/:name', (req, res) => {
-    Message.find({ name: req.params.name }, (err, messages) => {
+exports.findByName = (req, res) => {
+    messageModel.find({ name: req.params.name }, (err, messages) => {
         res.send(messages)
     })
-})
+}
 
-router.post('/', async (req, res) => {
+exports.create = async (req, res) => {
     const id = new mongoose.Types.ObjectId()
-    const message = new Message(Object.assign({
+    const message = new messageModel(Object.assign({
         _id: id
     }, req.body))
 
@@ -48,6 +43,4 @@ router.post('/', async (req, res) => {
     finally {
         console.log('Message Posted')
     }
-})
-
-export default router
+}
