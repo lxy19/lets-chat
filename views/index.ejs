@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Chat App</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <br>
+    <div class="jumbotron">
+      <h1 class="display-4">Lets chat</h1>
+      <br>
+      <input id="name" class="form-control" placeholder="Enter username">
+      <br>
+      <input id="text" class="form-control" placeholder="Enter message"></textarea>
+      <br>
+      <button id="send">Send</button>
+    </div>
+    <br>
+    <div id="users"></div>
+    <div id="feedback"></div>
+    <div id="messages"></div>
+  </div>
+  <script>
+    var socket = io();
+
+    const btn = document.getElementById('send')
+    const name = document.getElementById('name')
+    const text = document.getElementById('text')
+    const messages = document.getElementById('messages')
+      const feedback = document.getElementById('feedback')
+      const users = document.getElementById('users')
+
+      btn.addEventListener('click', () => {
+        $.post('http://localhost:3000/v1/chat', { name: name.value, text: text.value })
+        text.value = ''
+        if (name.value.length) {
+          socket.emit('join', name.value);
+        }
+      })
+
+    // Listen for events
+    socket.on('chat', (data) => {
+      feedback.innerHTML = ''
+      messages.innerHTML += '<p><strong>' + data.name + ': </strong>' + data.text + '</p>'
+    })
+
+    //emit message to server when messsage input using keypress
+    text.addEventListener('keypress', () => socket.emit('typing', name.value))
+
+    //display users who are typing
+    socket.on('typing', data => feedback.innerHTML = '<p><em>' + data + ' is typing a message... </p>')
+
+    //when a user joins, add new user
+    socket.on("join", (data) => {
+      users.innerHTML = 'online users: '
+      data.forEach(user => users.innerHTML += user + " ")
+    })
+
+  </script>
+</body>
+
+</html>
